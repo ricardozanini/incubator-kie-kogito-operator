@@ -16,6 +16,7 @@ package shared
 
 import (
 	"fmt"
+	"github.com/kiegroup/kogito-cloud-operator/pkg/util"
 
 	"strings"
 
@@ -59,6 +60,11 @@ func SilentlyInstallOperatorIfNotExists(namespace string, operatorImage string, 
 // operatorImage can be an empty string. In this case, the empty string is the default value.
 func MustInstallOperatorIfNotExists(namespace string, operatorImage string, cli *client.Client, silence bool) (installed bool, err error) {
 	log := context.GetDefaultLogger()
+
+	if util.GetBoolOSEnv("DEBUG") {
+		log.Info("DEBUG environment variable set to true, skipping operator installation process")
+		return true, nil
+	}
 
 	if len(operatorImage) == 0 {
 		operatorImage = DefaultOperatorImageNameTag
