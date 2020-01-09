@@ -80,6 +80,8 @@ var (
 	KindKogitoDataIndex = DefinitionKind{"KogitoDataIndex", false, v1alpha1.SchemeGroupVersion}
 	// KindKogitoDataIndexList for a KindKogitoDataIndexList controller
 	KindKogitoDataIndexList = DefinitionKind{"KogitoDataIndexList", false, v1alpha1.SchemeGroupVersion}
+	// KindKogitoJobsService for a KogitoJobsService controller
+	KindKogitoJobsService = DefinitionKind{"KogitoJobsService", false, v1alpha1.SchemeGroupVersion}
 	// KindConfigMap for a ConfigMap
 	KindConfigMap = DefinitionKind{"ConfigMap", false, corev1.SchemeGroupVersion}
 	// KindDeployment for a Deployment
