@@ -77,7 +77,7 @@ func (i *imageHandler) ResolveImage() string {
 	if len(domain) == 0 {
 		domain = defaultImageDomain
 	}
-	ns := i.image.Domain
+	ns := i.image.Namespace
 	if len(ns) == 0 {
 		ns = defaultImageNamespace
 	}
