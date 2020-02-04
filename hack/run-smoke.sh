@@ -114,6 +114,7 @@ case $1 in
   -t|--tags)
     shift
     if [[ ! ${1} =~ ^-.* ]] && [[ ! -z "${1}" ]]; then export TAGS="${1}"; shift; fi
+  ;;
   --build_image_version)
     shift
     if [[ ! ${1} =~ ^-.* ]] && [[ ! -z "${1}" ]]; then export KOGITO_BUILD_IMAGE_VERSION="${1}"; shift; fi
