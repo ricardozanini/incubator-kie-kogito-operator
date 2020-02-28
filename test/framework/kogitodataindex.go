@@ -42,7 +42,7 @@ func InstallKogitoDataIndexService(namespace string, installerType InstallerType
 
 func crInstallKogitoDataIndex(namespace string, replicas int) error {
 	// Get correct image tag
-	image := framework.ConvertImageTagToImage(infrastructure.DefaultDataIndexImage)
+	image := framework.ConvertImageTagToImage(infrastructure.DefaultDataIndexImageFullTag)
 	image.Tag = GetConfigServicesImageVersion()
 
 	kogitoDataIndex := &v1alpha1.KogitoDataIndex{
@@ -51,8 +51,10 @@ func crInstallKogitoDataIndex(namespace string, replicas int) error {
 			Namespace: namespace,
 		},
 		Spec: v1alpha1.KogitoDataIndexSpec{
-			Replicas: int32(replicas),
-			Image:    framework.ConvertImageToImageTag(image),
+			KogitoServiceSpec: v1alpha1.KogitoServiceSpec{
+				Replicas: int32(replicas),
+				Image: image,
+			},
 		},
 	}
 

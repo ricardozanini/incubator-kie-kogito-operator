@@ -73,7 +73,7 @@ spec:
                               must be defined
                             type: boolean
                         required:
-                        - key
+                          - key
                         type: object
                       fieldRef:
                         description: 'Selects a field of the pod: supports metadata.name,
@@ -89,7 +89,7 @@ spec:
                               API version.
                             type: string
                         required:
-                        - fieldPath
+                          - fieldPath
                         type: object
                       resourceFieldRef:
                         description: 'Selects a resource of the container: only resources
@@ -109,7 +109,7 @@ spec:
                             description: 'Required: resource to select'
                             type: string
                         required:
-                        - resource
+                          - resource
                         type: object
                       secretKeyRef:
                         description: Selects a key of a secret in the pod's namespace
@@ -127,11 +127,11 @@ spec:
                               be defined
                             type: boolean
                         required:
-                        - key
+                          - key
                         type: object
                     type: object
                 required:
-                - name
+                  - name
                 type: object
               type: array
             image:
@@ -178,8 +178,8 @@ spec:
                   description: SaslMechanism defined for the authentication. This
                     sets the property infinispan.client.hotrod.sasl_mechanism.
                   enum:
-                  - PLAIN
-                  - DIGEST-MD5
+                    - PLAIN
+                    - DIGEST-MD5
                   type: string
                 uri:
                   description: URI to connect to the Infinispan cluster (can it be
@@ -253,8 +253,8 @@ spec:
                     description: ConditionType is the type of condition
                     type: string
                 required:
-                - status
-                - type
+                  - status
+                  - type
                 type: object
               type: array
             deploymentStatus:
@@ -303,8 +303,8 @@ spec:
                         description: Type of deployment condition.
                         type: string
                     required:
-                    - status
-                    - type
+                      - status
+                      - type
                     type: object
                   type: array
                 observedGeneration:
@@ -341,11 +341,11 @@ spec:
               description: Image is the resolved image for this service
               type: string
           required:
-          - conditions
+            - conditions
           type: object
       type: object
   version: v1alpha1
   versions:
-  - name: v1alpha1
-    served: true
-    storage: true
+    - name: v1alpha1
+      served: true
+      storage: true

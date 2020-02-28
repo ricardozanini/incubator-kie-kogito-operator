@@ -89,7 +89,7 @@ func WaitForKogitoJobsService(namespace string, replicas, timeoutInMin int) erro
 		if err != nil {
 			return false, err
 		}
-		if service == nil {
+		if deployment == nil {
 			return false, nil
 		}
 		return service.Status.Replicas == int32(replicas) && service.Status.AvailableReplicas == int32(replicas), nil
@@ -120,11 +120,13 @@ func getJobsServiceStub(namespace string, replicas int, persistence bool) *v1alp
 			Namespace: namespace,
 		},
 		Status: v1alpha1.KogitoJobsServiceStatus{
-			ConditionsMeta: v1alpha1.ConditionsMeta{Conditions: []v1alpha1.Condition{}},
+			KogitoServiceStatus: v1alpha1.KogitoServiceStatus{ConditionsMeta: v1alpha1.ConditionsMeta{Conditions: []v1alpha1.Condition{}}},
 		},
 		Spec: v1alpha1.KogitoJobsServiceSpec{
-			Replicas: int32(replicas),
-			Image:    image,
+			KogitoServiceSpec: v1alpha1.KogitoServiceSpec{
+				Replicas: int32(replicas),
+				Image:    image,
+			},
 		},
 	}
 
