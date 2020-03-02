@@ -119,13 +119,17 @@ func getJobsServiceStub(namespace string, replicas int, persistence bool) *v1alp
 			Name:      infrastructure.DefaultJobsServiceName,
 			Namespace: namespace,
 		},
-		Status: v1alpha1.KogitoJobsServiceStatus{
-			KogitoServiceStatus: v1alpha1.KogitoServiceStatus{ConditionsMeta: v1alpha1.ConditionsMeta{Conditions: []v1alpha1.Condition{}}},
-		},
 		Spec: v1alpha1.KogitoJobsServiceSpec{
 			KogitoServiceSpec: v1alpha1.KogitoServiceSpec{
 				Replicas: int32(replicas),
 				Image:    image,
+			},
+		},
+		Status: v1alpha1.KogitoJobsServiceStatus{
+			KogitoServiceStatus: v1alpha1.KogitoServiceStatus{
+				ConditionsMeta: v1alpha1.ConditionsMeta{
+					Conditions: []v1alpha1.Condition{}
+				}
 			},
 		},
 	}

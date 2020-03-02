@@ -53,7 +53,14 @@ func crInstallKogitoDataIndex(namespace string, replicas int) error {
 		Spec: v1alpha1.KogitoDataIndexSpec{
 			KogitoServiceSpec: v1alpha1.KogitoServiceSpec{
 				Replicas: int32(replicas),
-				Image: image,
+				Image:    image,
+			},
+		},
+		Status: v1alpha1.KogitoDataIndexStatus{
+			KogitoServiceStatus: v1alpha1.KogitoServiceStatus{
+				ConditionsMeta: v1alpha1.ConditionsMeta{
+					Conditions: []v1alpha1.Condition{},
+				},
 			},
 		},
 	}
