@@ -39,24 +39,24 @@ func FromStringsKeyPairToMap(array []string) map[string]string {
 	if array == nil || len(array) == 0 {
 		return nil
 	}
-	kp := map[string]string{}
+	keyPairMap := map[string]string{}
 	for _, item := range array {
-		split := strings.SplitN(item, keyPairSeparator, 2)
-		if len(split) == 0 {
+		keyPair := strings.SplitN(item, keyPairSeparator, 2)
+		if len(keyPair) == 0 {
 			break
 		}
 
-		if len(split[0]) == 0 {
+		if len(keyPair[0]) == 0 {
 			break
 		}
 
-		if len(split) == 2 {
-			kp[split[0]] = split[1]
-		} else if len(split) == 1 {
-			kp[split[0]] = ""
+		if len(keyPair) == 2 {
+			keyPairMap[keyPair[0]] = keyPair[1]
+		} else if len(keyPair) == 1 {
+			keyPairMap[keyPair[0]] = ""
 		}
 	}
-	return kp
+	return keyPairMap
 }
 
 // ParseStringsForKeyPair will parse the given string array for a valid key=pair format on each item.

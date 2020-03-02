@@ -52,7 +52,7 @@ func manageStatus(instance v1alpha1.KogitoService, imageName string, cli *client
 	}
 	updateStatus = changed || updateStatus
 
-	if readyReplicas == *instance.GetSpec().GetReplicas() && readyReplicas > 0 {
+	if readyReplicas == instance.GetSpec().GetReplicas() && readyReplicas > 0 {
 		updateStatus = instance.GetStatus().SetDeployed() || updateStatus
 	} else {
 		updateStatus = instance.GetStatus().SetProvisioning() || updateStatus

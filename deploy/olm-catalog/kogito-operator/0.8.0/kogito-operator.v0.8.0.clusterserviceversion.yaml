@@ -81,7 +81,7 @@ spec:
   apiservicedefinitions: {}
   customresourcedefinitions:
     owned:
-    - description: KogitoApp is the Schema for the kogitoapps API
+    - description: KogitoApp is a project prescription running a Kogito Runtime Service.
       displayName: Kogito Service
       kind: KogitoApp
       name: kogitoapps.app.kiegroup.org
@@ -173,7 +173,7 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:org.w3:link
       version: v1alpha1
-    - description: KogitoDataIndex is the Schema for the kogitodataindices API
+    - description: KogitoDataIndex defines the Data Index Service infrastructure deployment
       displayName: Kogito Data Index
       kind: KogitoDataIndex
       name: kogitodataindices.app.kiegroup.org
@@ -199,7 +199,7 @@ spec:
         displayName: Envs
         path: envs
       - description: 'Image definition for the service. Example: Domain: quay.io,
-          Namespace: kiegroup, Name: kogito-jobs-service, Tag: latest On OpenShift
+          Namespace: kiegroup, Name: kogito-jobs-service, Tag: latest. On OpenShift
           an ImageStream will be created in the current namespace pointing to the
           given image.'
         displayName: Image
@@ -235,7 +235,11 @@ spec:
         displayName: Image
         path: image
       version: v1alpha1
-    - description: KogitoInfra is the Schema for the kogitoinfras API
+    - description: KogitoInfra will be managed automatically by the operator, don't
+        need to create it manually. Kogito Infra is responsible to delegate the creation
+        of each infrastructure dependency (such as Infinispan) to a third party operator.
+        It holds the deployment status of each infrastructure dependency and custom
+        resources needed to run Kogito Runtime and Kogito Data Index services.
       displayName: Kogito Infra
       kind: KogitoInfra
       name: kogitoinfras.app.kiegroup.org
@@ -303,7 +307,7 @@ spec:
         displayName: Envs
         path: envs
       - description: 'Image definition for the service. Example: Domain: quay.io,
-          Namespace: kiegroup, Name: kogito-jobs-service, Tag: latest On OpenShift
+          Namespace: kiegroup, Name: kogito-jobs-service, Tag: latest. On OpenShift
           an ImageStream will be created in the current namespace pointing to the
           given image.'
         displayName: Image

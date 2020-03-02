@@ -24,8 +24,9 @@ import (
 )
 
 const (
-	portName    = "http"
-	labelAppKey = "app"
+	portName      = "http"
+	labelAppKey   = "app"
+	singleReplica = 1
 )
 
 var defaultProbe = &corev1.Probe{
@@ -38,15 +39,17 @@ var defaultProbe = &corev1.Probe{
 	FailureThreshold: int32(3),
 }
 
-func createRequiredDeployment(service v1alpha1.KogitoService, image *imageHandler) *appsv1.Deployment {
-	if service.GetSpec().GetReplicas() == nil {
-		service.GetSpec().SetReplicas(1)
+func createRequiredDeployment(service v1alpha1.KogitoService, image *imageHandler, definition ServiceDefinition) *appsv1.Deployment {
+	if definition.SingleReplica && service.GetSpec().GetReplicas() > singleReplica {
+		service.GetSpec().SetReplicas(singleReplica)
+		log.Warnf("%s can't scale vertically, only one replica is allowed.", service.GetName())
 	}
+	replicas := service.GetSpec().GetReplicas()
 
 	deployment := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{Name: service.GetName(), Namespace: service.GetNamespace(), Labels: map[string]string{labelAppKey: service.GetName()}},
 		Spec: appsv1.DeploymentSpec{
-			Replicas: service.GetSpec().GetReplicas(),
+			Replicas: &replicas,
 			Selector: &metav1.LabelSelector{MatchLabels: map[string]string{labelAppKey: service.GetName()}},
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{Labels: map[string]string{labelAppKey: service.GetName()}},

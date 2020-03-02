@@ -68,7 +68,7 @@ func cliInstallKogitoDataIndex(namespace string, replicas int) error {
 	cmd := []string{"install", "data-index"}
 
 	// Get correct image tag
-	image := framework.ConvertImageTagToImage(infrastructure.DefaultDataIndexImage)
+	image := framework.ConvertImageTagToImage(infrastructure.DefaultDataIndexImageFullTag)
 	image.Tag = GetConfigServicesImageVersion()
 	cmd = append(cmd, "--image", framework.ConvertImageToImageTag(image))
 

@@ -121,9 +121,10 @@ func (r *ReconcileKogitoJobsService) Reconcile(request reconcile.Request) (resul
 
 	instances := &appv1alpha1.KogitoJobsServiceList{}
 	definition := services.ServiceDefinition{
-		DefaultImageName:             infrastructure.DefaultJobsServiceImageName,
-		Namespace:                    request.Namespace,
-		CustomConfigOnDeploymentHook: applyCustomDeploymentConfig,
+		DefaultImageName:   infrastructure.DefaultJobsServiceImageName,
+		Namespace:          request.Namespace,
+		OnDeploymentCreate: onDeploymentCreate,
+		SingleReplica:      true,
 	}
 	if requeueAfter, err := services.NewServiceDeployer(definition, instances, r.client, r.scheme).Deploy(); err != nil {
 		return reconcile.Result{}, err
@@ -141,7 +142,7 @@ const (
 	maxIntervalLimitRetryDefaultValue = 60000
 )
 
-func applyCustomDeploymentConfig(deployment *appsv1.Deployment, service appv1alpha1.KogitoService) error {
+func onDeploymentCreate(deployment *appsv1.Deployment, service appv1alpha1.KogitoService) error {
 	jobService := service.(*appv1alpha1.KogitoJobsService)
 	if &jobService.Spec.BackOffRetryMillis != nil {
 		if jobService.Spec.BackOffRetryMillis <= 0 {

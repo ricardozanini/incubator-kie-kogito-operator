@@ -42,7 +42,7 @@ type KogitoDataIndexStatus struct {
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// KogitoDataIndex is the Schema for the kogitodataindices API
+// KogitoDataIndex defines the Data Index Service infrastructure deployment
 // +k8s:openapi-gen=true
 // +kubebuilder:resource:path=kogitodataindices,scope=Namespaced
 // +operator-sdk:gen-csv:customresourcedefinitions.displayName="Kogito Data Index"

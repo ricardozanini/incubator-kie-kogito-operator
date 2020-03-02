@@ -38,9 +38,9 @@ const (
 func (s *serviceDeployer) createRequiredResources(instance v1alpha1.KogitoService) (resources map[reflect.Type][]resource.KubernetesResource, err error) {
 	resources = make(map[reflect.Type][]resource.KubernetesResource)
 	imageHandler := newImageHandler(instance, s.definition.DefaultImageName, s.client)
-	deployment := createRequiredDeployment(instance, imageHandler)
-	if s.definition.CustomConfigOnDeploymentHook != nil {
-		if err = s.definition.CustomConfigOnDeploymentHook(deployment, instance); err != nil {
+	deployment := createRequiredDeployment(instance, imageHandler, s.definition)
+	if s.definition.OnDeploymentCreate != nil {
+		if err = s.definition.OnDeploymentCreate(deployment, instance); err != nil {
 			return
 		}
 	}

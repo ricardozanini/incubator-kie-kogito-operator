@@ -453,7 +453,7 @@ func schema_pkg_apis_app_v1alpha1_KogitoApp(ref common.ReferenceCallback) common
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
-				Description: "KogitoApp is the Schema for the kogitoapps API",
+				Description: "KogitoApp is a project prescription running a Kogito Runtime Service.",
 				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
 					"kind": {
@@ -764,7 +764,7 @@ func schema_pkg_apis_app_v1alpha1_KogitoDataIndex(ref common.ReferenceCallback) 
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
-				Description: "KogitoDataIndex is the Schema for the kogitodataindices API",
+				Description: "KogitoDataIndex defines the Data Index Service infrastructure deployment",
 				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
 					"kind": {
@@ -850,7 +850,7 @@ func schema_pkg_apis_app_v1alpha1_KogitoDataIndexSpec(ref common.ReferenceCallba
 					},
 					"image": {
 						SchemaProps: spec.SchemaProps{
-							Description: "Image definition for the service. Example: Domain: quay.io, Namespace: kiegroup, Name: kogito-jobs-service, Tag: latest On OpenShift an ImageStream will be created in the current namespace pointing to the given image.",
+							Description: "Image definition for the service. Example: Domain: quay.io, Namespace: kiegroup, Name: kogito-jobs-service, Tag: latest. On OpenShift an ImageStream will be created in the current namespace pointing to the given image.",
 							Ref:         ref("github.com/kiegroup/kogito-cloud-operator/pkg/apis/app/v1alpha1.Image"),
 						},
 					},
@@ -940,7 +940,7 @@ func schema_pkg_apis_app_v1alpha1_KogitoInfra(ref common.ReferenceCallback) comm
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
-				Description: "KogitoInfra is the Schema for the kogitoinfras API",
+				Description: "KogitoInfra will be managed automatically by the operator, don't need to create it manually. Kogito Infra is responsible to delegate the creation of each infrastructure dependency (such as Infinispan) to a third party operator. It holds the deployment status of each infrastructure dependency and custom resources needed to run Kogito Runtime and Kogito Data Index services.",
 				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
 					"kind": {
@@ -1133,7 +1133,7 @@ func schema_pkg_apis_app_v1alpha1_KogitoJobsServiceSpec(ref common.ReferenceCall
 					},
 					"image": {
 						SchemaProps: spec.SchemaProps{
-							Description: "Image definition for the service. Example: Domain: quay.io, Namespace: kiegroup, Name: kogito-jobs-service, Tag: latest On OpenShift an ImageStream will be created in the current namespace pointing to the given image.",
+							Description: "Image definition for the service. Example: Domain: quay.io, Namespace: kiegroup, Name: kogito-jobs-service, Tag: latest. On OpenShift an ImageStream will be created in the current namespace pointing to the given image.",
 							Ref:         ref("github.com/kiegroup/kogito-cloud-operator/pkg/apis/app/v1alpha1.Image"),
 						},
 					},

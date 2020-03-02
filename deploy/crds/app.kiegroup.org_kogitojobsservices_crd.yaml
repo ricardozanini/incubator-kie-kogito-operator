@@ -136,7 +136,7 @@ spec:
               type: array
             image:
               description: 'Image definition for the service. Example: Domain: quay.io,
-                Namespace: kiegroup, Name: kogito-jobs-service, Tag: latest On OpenShift
+                Namespace: kiegroup, Name: kogito-jobs-service, Tag: latest. On OpenShift
                 an ImageStream will be created in the current namespace pointing to
                 the given image.'
               properties:
@@ -209,7 +209,6 @@ spec:
               description: 'Number of replicas that the service will have deployed
                 in the cluster Default value: 1'
               format: int32
-              maximum: 1
               minimum: 0
               type: integer
             resources:

@@ -12,7 +12,7 @@ spec:
   scope: Namespaced
   validation:
     openAPIV3Schema:
-      description: KogitoDataIndex is the Schema for the kogitodataindices API
+      description: KogitoDataIndex defines the Data Index Service infrastructure deployment
       properties:
         apiVersion:
           description: 'APIVersion defines the versioned schema of this representation
@@ -135,7 +135,7 @@ spec:
               type: integer
             image:
               description: 'Image definition for the service. Example: Domain: quay.io,
-                Namespace: kiegroup, Name: kogito-jobs-service, Tag: latest On OpenShift
+                Namespace: kiegroup, Name: kogito-jobs-service, Tag: latest. On OpenShift
                 an ImageStream will be created in the current namespace pointing to
                 the given image.'
               properties:
@@ -226,7 +226,6 @@ spec:
               description: 'Number of replicas that the service will have deployed
                 in the cluster Default value: 1'
               format: int32
-              maximum: 1
               minimum: 0
               type: integer
             resources:

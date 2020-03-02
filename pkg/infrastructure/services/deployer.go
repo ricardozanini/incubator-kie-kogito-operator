@@ -39,8 +39,10 @@ type ServiceDefinition struct {
 	DefaultImageName string
 	// Namespace where the service should be deployed (you get this value from the request parameter)
 	Namespace string
-	// CustomConfigOnDeploymentHook applies custom deployment configuration in the required Deployment resource
-	CustomConfigOnDeploymentHook func(deployment *appsv1.Deployment, kogitoService v1alpha1.KogitoService) error
+	// OnDeploymentCreate applies custom deployment configuration in the required Deployment resource
+	OnDeploymentCreate func(deployment *appsv1.Deployment, kogitoService v1alpha1.KogitoService) error
+	// SingleReplica avoids that the service has more than one replica
+	SingleReplica bool
 	// KafkaTopics is a collection of Kafka Topics to be created within the service
 	KafkaTopics []KafkaTopicDefinition
 	// infinispanIntegration whether or not to handle Infinispan integration in this service (inject variables, deploy if needed, and so on)

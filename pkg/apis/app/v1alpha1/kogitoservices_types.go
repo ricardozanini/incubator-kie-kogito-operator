@@ -92,7 +92,7 @@ func (k *KogitoServiceStatus) SetExternalURI(uri string) { k.ExternalURI = uri }
 
 // KogitoServiceSpecInterface defines the interface for the Kogito Service specification, it's the basic structure for any Kogito Service
 type KogitoServiceSpecInterface interface {
-	GetReplicas() *int32
+	GetReplicas() int32
 	SetReplicas(replicas int32)
 	GetEnvs() []corev1.EnvVar
 	SetEnvs(envs []corev1.EnvVar)
@@ -111,7 +111,6 @@ type KogitoServiceSpec struct {
 	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors.displayName="Replicas"
 	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors.x-descriptors="urn:alm:descriptor:com.tectonic.ui:podCount"
 	// +kubebuilder:validation:Minimum=0
-	// +kubebuilder:validation:Maximum=1
 	Replicas int32 `json:"replicas"`
 
 	// +optional
@@ -121,7 +120,7 @@ type KogitoServiceSpec struct {
 	Envs []corev1.EnvVar `json:"envs,omitempty"`
 
 	// +optional
-	// Image definition for the service. Example: Domain: quay.io, Namespace: kiegroup, Name: kogito-jobs-service, Tag: latest
+	// Image definition for the service. Example: Domain: quay.io, Namespace: kiegroup, Name: kogito-jobs-service, Tag: latest.
 	// On OpenShift an ImageStream will be created in the current namespace pointing to the given image.
 	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors=true
 	Image Image `json:"image,omitempty"`
@@ -134,7 +133,7 @@ type KogitoServiceSpec struct {
 }
 
 // GetReplicas ...
-func (k *KogitoServiceSpec) GetReplicas() *int32 { return &k.Replicas }
+func (k *KogitoServiceSpec) GetReplicas() int32 { return k.Replicas }
 
 // SetReplicas ...
 func (k *KogitoServiceSpec) SetReplicas(replicas int32) { k.Replicas = replicas }

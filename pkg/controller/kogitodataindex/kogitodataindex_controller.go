@@ -134,10 +134,10 @@ func (r *ReconcileKogitoDataIndex) Reconcile(request reconcile.Request) (result 
 
 	instances := &appv1alpha1.KogitoDataIndexList{}
 	definition := services.ServiceDefinition{
-		DefaultImageName:             infrastructure.DefaultDataIndexImageName,
-		Namespace:                    request.Namespace,
-		CustomConfigOnDeploymentHook: r.applyCustomConfigOnDeployment,
-		KafkaTopics:                  kafkaTopics,
+		DefaultImageName:   infrastructure.DefaultDataIndexImageName,
+		Namespace:          request.Namespace,
+		OnDeploymentCreate: r.onDeploymentCreate,
+		KafkaTopics:        kafkaTopics,
 	}
 	if requeueAfter, err := services.NewServiceDeployer(definition, instances, r.client, r.scheme).Deploy(); err != nil {
 		return reconcile.Result{}, err
@@ -184,7 +184,7 @@ var protoBufEnvsNoVolume = map[string]string{
 	protoBufKeyWatch:  "false",
 }
 
-func (r *ReconcileKogitoDataIndex) applyCustomConfigOnDeployment(deployment *appsv1.Deployment, kogitoService appv1alpha1.KogitoService) error {
+func (r *ReconcileKogitoDataIndex) onDeploymentCreate(deployment *appsv1.Deployment, kogitoService appv1alpha1.KogitoService) error {
 	if len(deployment.Spec.Template.Spec.Containers) > 0 {
 		httpPort := defineDataIndexHTTPPort(kogitoService.(*appv1alpha1.KogitoDataIndex))
 		framework.SetEnvVar(dataIndexEnvKeyHTTPPort, strconv.Itoa(int(httpPort)), &deployment.Spec.Template.Spec.Containers[0])
