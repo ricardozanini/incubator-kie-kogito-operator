@@ -32,7 +32,7 @@ func InstallKogitoDataIndexService(namespace string, installerType InstallerType
 	GetLogger(namespace).Infof("%s install Kogito Data Index with %d replicas", installerType, replicas)
 	switch installerType {
 	case CLIInstallerType:
-		return cliInstallKogitoDataIndex(namespace, replicas)
+		return cliInstallKogitoDataIndex(namespace)
 	case CRInstallerType:
 		return crInstallKogitoDataIndex(namespace, replicas)
 	default:
@@ -42,7 +42,7 @@ func InstallKogitoDataIndexService(namespace string, installerType InstallerType
 
 func crInstallKogitoDataIndex(namespace string, replicas int) error {
 	// Get correct image tag
-	image := framework.ConvertImageTagToImage(infrastructure.DefaultDataIndexImage)
+	image := framework.ConvertImageTagToImage(infrastructure.DefaultDataIndexImageFullTag)
 	image.Tag = GetConfigServicesImageVersion()
 
 	kogitoDataIndex := &v1alpha1.KogitoDataIndex{
@@ -51,8 +51,17 @@ func crInstallKogitoDataIndex(namespace string, replicas int) error {
 			Namespace: namespace,
 		},
 		Spec: v1alpha1.KogitoDataIndexSpec{
-			Replicas: int32(replicas),
-			Image:    framework.ConvertImageToImageTag(image),
+			KogitoServiceSpec: v1alpha1.KogitoServiceSpec{
+				Replicas: int32(replicas),
+				Image:    image,
+			},
+		},
+		Status: v1alpha1.KogitoDataIndexStatus{
+			KogitoServiceStatus: v1alpha1.KogitoServiceStatus{
+				ConditionsMeta: v1alpha1.ConditionsMeta{
+					Conditions: []v1alpha1.Condition{},
+				},
+			},
 		},
 	}
 
@@ -62,11 +71,11 @@ func crInstallKogitoDataIndex(namespace string, replicas int) error {
 	return nil
 }
 
-func cliInstallKogitoDataIndex(namespace string, replicas int) error {
+func cliInstallKogitoDataIndex(namespace string) error {
 	cmd := []string{"install", "data-index"}
 
 	// Get correct image tag
-	image := framework.ConvertImageTagToImage(infrastructure.DefaultDataIndexImage)
+	image := framework.ConvertImageTagToImage(infrastructure.DefaultDataIndexImageFullTag)
 	image.Tag = GetConfigServicesImageVersion()
 	cmd = append(cmd, "--image", framework.ConvertImageToImageTag(image))
 

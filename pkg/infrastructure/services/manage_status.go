@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package status
+package services
 
 import (
 	"fmt"
@@ -20,20 +20,16 @@ import (
 	"github.com/kiegroup/kogito-cloud-operator/pkg/client"
 	"github.com/kiegroup/kogito-cloud-operator/pkg/client/kubernetes"
 	"github.com/kiegroup/kogito-cloud-operator/pkg/client/openshift"
-	"github.com/kiegroup/kogito-cloud-operator/pkg/controller/kogitojobsservice/resource"
-	"github.com/kiegroup/kogito-cloud-operator/pkg/logger"
 	appsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"reflect"
 )
 
-var log = logger.GetLogger("jobsservice_status")
-
-// ManageStatus handle status update for the Jobs Service
-func ManageStatus(instance *v1alpha1.KogitoJobsService, cli *client.Client, errCondition error) (err error) {
+// manageStatus handle status update for the Kogito Service
+func manageStatus(instance v1alpha1.KogitoService, imageName string, cli *client.Client, errCondition error) (err error) {
 	if errCondition != nil {
-		instance.Status.SetFailed(v1alpha1.UnknownReason, errCondition)
+		instance.GetStatus().SetFailed(v1alpha1.UnknownReason, errCondition)
 		if err := update(instance, cli); err != nil {
 			log.Errorf("Error while trying to set condition to error: %s", err)
 			return err
@@ -41,11 +37,10 @@ func ManageStatus(instance *v1alpha1.KogitoJobsService, cli *client.Client, errC
 		// don't need to updateStatus anything else unless we break the error state
 		return nil
 	}
-
-	updateStatus := false
+	var readyReplicas int32
 	changed := false
-	updateStatus = updateImageStatus(instance) || updateStatus
-	if changed, err = updateDeploymentStatus(instance, cli); err != nil {
+	updateStatus := updateImageStatus(instance, imageName)
+	if changed, readyReplicas, err = updateDeploymentStatus(instance, cli); err != nil {
 		return err
 	}
 	updateStatus = changed || updateStatus
@@ -55,10 +50,10 @@ func ManageStatus(instance *v1alpha1.KogitoJobsService, cli *client.Client, errC
 	}
 	updateStatus = changed || updateStatus
 
-	if instance.Status.DeploymentStatus.ReadyReplicas == instance.Spec.Replicas {
-		updateStatus = instance.Status.SetDeployed() || updateStatus
+	if readyReplicas == instance.GetSpec().GetReplicas() && readyReplicas > 0 {
+		updateStatus = instance.GetStatus().SetDeployed() || updateStatus
 	} else {
-		updateStatus = instance.Status.SetProvisioning() || updateStatus
+		updateStatus = instance.GetStatus().SetProvisioning() || updateStatus
 	}
 
 	if updateStatus {
@@ -71,7 +66,7 @@ func ManageStatus(instance *v1alpha1.KogitoJobsService, cli *client.Client, errC
 	return nil
 }
 
-func update(instance *v1alpha1.KogitoJobsService, cli *client.Client) error {
+func update(instance v1alpha1.KogitoService, cli *client.Client) error {
 	err := kubernetes.ResourceC(cli).Update(instance)
 	if err != nil {
 		return err
@@ -79,35 +74,35 @@ func update(instance *v1alpha1.KogitoJobsService, cli *client.Client) error {
 	return nil
 }
 
-func updateImageStatus(instance *v1alpha1.KogitoJobsService) bool {
-	image := resource.NewImageResolver(instance).ResolveImage()
-	if image != instance.Status.Image {
-		instance.Status.Image = image
+func updateImageStatus(instance v1alpha1.KogitoService, imageName string) bool {
+	image := newImageResolver(instance, imageName).resolveImage()
+	if image != instance.GetStatus().GetImage() {
+		instance.GetStatus().SetImage(image)
 		return true
 	}
 	return false
 }
 
-func updateDeploymentStatus(instance *v1alpha1.KogitoJobsService, cli *client.Client) (bool, error) {
-	deployment := &appsv1.Deployment{ObjectMeta: metav1.ObjectMeta{Name: instance.Name, Namespace: instance.Namespace}}
+func updateDeploymentStatus(instance v1alpha1.KogitoService, cli *client.Client) (update bool, readyReplicas int32, err error) {
+	deployment := &appsv1.Deployment{ObjectMeta: metav1.ObjectMeta{Name: instance.GetName(), Namespace: instance.GetNamespace()}}
 	if _, err := kubernetes.ResourceC(cli).Fetch(deployment); err != nil {
-		return false, err
+		return false, 0, err
 	}
-	if !reflect.DeepEqual(instance.Status.DeploymentStatus, deployment.Status) {
-		instance.Status.DeploymentStatus = deployment.Status
-		return true, nil
+	if !reflect.DeepEqual(instance.GetStatus().GetDeploymentConditions(), deployment.Status.Conditions) {
+		instance.GetStatus().SetDeploymentConditions(deployment.Status.Conditions)
+		return true, deployment.Status.ReadyReplicas, nil
 	}
-	return false, nil
+	return false, deployment.Status.ReadyReplicas, nil
 }
 
-func updateRouteStatus(instance *v1alpha1.KogitoJobsService, cli *client.Client) (bool, error) {
+func updateRouteStatus(instance v1alpha1.KogitoService, cli *client.Client) (bool, error) {
 	if cli.IsOpenshift() {
-		if exists, route, err := openshift.RouteC(cli).GetHostFromRoute(types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace}); err != nil {
+		if exists, route, err := openshift.RouteC(cli).GetHostFromRoute(types.NamespacedName{Name: instance.GetName(), Namespace: instance.GetNamespace()}); err != nil {
 			return false, err
 		} else if exists {
 			uri := fmt.Sprintf("http://%s", route)
-			if uri != instance.Status.ExternalURI {
-				instance.Status.ExternalURI = uri
+			if uri != instance.GetStatus().GetExternalURI() {
+				instance.GetStatus().SetExternalURI(uri)
 				return true, nil
 			}
 		}
