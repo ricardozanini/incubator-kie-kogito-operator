@@ -45,7 +45,11 @@ func installDefaultDataIndex(cli *client.Client, namespace string) error {
 			KafkaMeta:      v1alpha1.KafkaMeta{KafkaProperties: v1alpha1.KafkaConnectionProperties{UseKogitoInfra: true}},
 		},
 		Status: v1alpha1.KogitoDataIndexStatus{
-			KogitoServiceStatus: v1alpha1.KogitoServiceStatus{},
+			KogitoServiceStatus: v1alpha1.KogitoServiceStatus{
+				ConditionsMeta: v1alpha1.ConditionsMeta{
+					Conditions: []v1alpha1.Condition{},
+				},
+			},
 		},
 	}
 
