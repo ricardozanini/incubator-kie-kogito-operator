@@ -16,6 +16,7 @@ package framework
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/kiegroup/kogito-cloud-operator/pkg/apis/app/v1alpha1"
@@ -33,7 +34,7 @@ func InstallKogitoJobsService(namespace string, installerType InstallerType, rep
 	GetLogger(namespace).Infof("%s install Kogito Jobs Service with %d replicas and persistence %v", installerType, replicas, persistence)
 	switch installerType {
 	case CLIInstallerType:
-		return cliInstallKogitoJobsService(namespace, persistence)
+		return cliInstallKogitoJobsService(namespace, replicas, persistence)
 	case CRInstallerType:
 		return crInstallKogitoJobsService(namespace, replicas, persistence)
 	default:
@@ -50,7 +51,7 @@ func crInstallKogitoJobsService(namespace string, replicas int, persistence bool
 	return nil
 }
 
-func cliInstallKogitoJobsService(namespace string, persistence bool) error {
+func cliInstallKogitoJobsService(namespace string, replicas int, persistence bool) error {
 	cmd := []string{"install", "jobs-service"}
 
 	if persistence {
@@ -61,6 +62,8 @@ func cliInstallKogitoJobsService(namespace string, persistence bool) error {
 	image := framework.ConvertImageTagToImage(infrastructure.DefaultJobsServiceImageFullTag)
 	image.Tag = GetConfigServicesImageVersion()
 	cmd = append(cmd, "--image", framework.ConvertImageToImageTag(image))
+
+	cmd = append(cmd, "--replicas", strconv.Itoa(replicas))
 
 	_, err := ExecuteCliCommandInNamespace(namespace, cmd...)
 	return err
