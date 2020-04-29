@@ -16,6 +16,9 @@ package kogitoruntime
 
 import (
 	"fmt"
+	"reflect"
+	"strings"
+
 	"github.com/RHsyseng/operator-utils/pkg/resource"
 	"github.com/RHsyseng/operator-utils/pkg/resource/compare"
 	"github.com/kiegroup/kogito-cloud-operator/pkg/apis/app/v1alpha1"
@@ -25,8 +28,6 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
-	"reflect"
-	"strings"
 )
 
 const (

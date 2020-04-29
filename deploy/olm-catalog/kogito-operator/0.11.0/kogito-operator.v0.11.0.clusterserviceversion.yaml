@@ -564,12 +564,6 @@ spec:
         path: resources
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
-      - description: 'The name of the runtime used, either Quarkus or Springboot Default
-          value: quarkus'
-        displayName: runtime
-        path: runtime
-        x-descriptors:
-        - urn:alm:descriptor:com.tectonic.ui:label
       - description: Additional labels to be added to the Service managed by the operator
         displayName: Additional Service Labels
         path: serviceLabels

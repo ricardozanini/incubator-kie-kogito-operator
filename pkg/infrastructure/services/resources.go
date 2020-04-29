@@ -15,6 +15,9 @@
 package services
 
 import (
+	"reflect"
+	"time"
+
 	"github.com/RHsyseng/operator-utils/pkg/resource"
 	"github.com/RHsyseng/operator-utils/pkg/resource/compare"
 	"github.com/RHsyseng/operator-utils/pkg/resource/read"
@@ -27,10 +30,8 @@ import (
 	routev1 "github.com/openshift/api/route/v1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/apis/meta/v1"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
-	"reflect"
-	"time"
 )
 
 const (
