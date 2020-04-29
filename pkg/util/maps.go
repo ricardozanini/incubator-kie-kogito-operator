@@ -85,3 +85,10 @@ func ParseStringsForKeyPair(array []string) error {
 	}
 	return nil
 }
+
+// AppendToStringMap appends source into dest. If keys are equal, value is overridden
+func AppendToStringMap(source map[string]string, dest map[string]string) {
+	for k, v := range source {
+		dest[k] = v
+	}
+}
