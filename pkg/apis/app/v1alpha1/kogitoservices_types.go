@@ -105,6 +105,7 @@ type KogitoServiceSpecInterface interface {
 	SetDeploymentLabels(labels map[string]string)
 	GetServiceLabels() map[string]string
 	SetServiceLabels(labels map[string]string)
+	GetRuntime() RuntimeType
 }
 
 // KogitoServiceSpec is the basic structure for the Kogito Service specification

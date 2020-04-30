@@ -70,8 +70,6 @@ type ServiceDefinition struct {
 	KafkaTopics []KafkaTopicDefinition
 	// HealthCheckProbe is the probe that needs to be configured in the service. Defaults to TCPHealthCheckProbe
 	HealthCheckProbe HealthCheckProbeType
-	// Runtime is the framework runtime type for the service. Default to QuarkusRuntime
-	Runtime RuntimeType
 	// infinispanAware whether or not to handle Infinispan integration in this service (inject variables, deploy if needed, and so on)
 	infinispanAware bool
 	// kafkaAware whether or not to handle Kafka integration in this service (inject variables, deploy if needed, and so on)
@@ -79,16 +77,6 @@ type ServiceDefinition struct {
 	// extraManagedObjectLists is a holder for the OnObjectsCreate return function
 	extraManagedObjectLists []runtime.Object
 }
-
-const (
-	// QuarkusRuntime ...
-	QuarkusRuntime RuntimeType = "quarkus"
-	// SpringBootRuntime ...
-	SpringBootRuntime RuntimeType = "springboot"
-)
-
-// RuntimeType defines the service runtime
-type RuntimeType string
 
 // KafkaTopicDefinition ...
 type KafkaTopicDefinition struct {
@@ -132,9 +120,6 @@ func NewServiceDeployer(definition ServiceDefinition, serviceType v1alpha1.Kogit
 }
 
 func builderCheck(definition ServiceDefinition) {
-	if len(definition.Runtime) == 0 {
-		definition.Runtime = QuarkusRuntime
-	}
 	if &definition.Request == nil {
 		panic("No Request provided for the Service Deployer")
 	}

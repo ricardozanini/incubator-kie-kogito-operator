@@ -25,7 +25,7 @@ import (
 
 func Test_SetInfinispanVariables(t *testing.T) {
 	type args struct {
-		runtime              RuntimeType
+		runtime              v1alpha1.RuntimeType
 		connectionProperties v1alpha1.InfinispanConnectionProperties
 		secret               *corev1.Secret
 	}

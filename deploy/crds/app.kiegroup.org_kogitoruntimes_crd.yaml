@@ -267,6 +267,13 @@ spec:
                     value. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
                   type: object
               type: object
+            runtime:
+              description: 'The name of the runtime used, either Quarkus or Springboot
+                Default value: quarkus'
+              enum:
+              - quarkus
+              - springboot
+              type: string
             serviceLabels:
               additionalProperties:
                 type: string

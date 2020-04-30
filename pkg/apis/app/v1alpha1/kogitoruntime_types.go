@@ -29,6 +29,14 @@ type KogitoRuntimeSpec struct {
 	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors.displayName="Enable Istio"
 	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors.x-descriptors="urn:alm:descriptor:com.tectonic.ui:booleanSwitch"
 	EnableIstio bool `json:"enableIstio,omitempty"`
+
+	// The name of the runtime used, either Quarkus or Springboot
+	// Default value: quarkus
+	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors=true
+	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors.displayName="runtime"
+	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors.x-descriptors="urn:alm:descriptor:com.tectonic.ui:label"
+	// +kubebuilder:validation:Enum=quarkus;springboot
+	Runtime RuntimeType `json:"runtime,omitempty"`
 }
 
 // KogitoRuntimeStatus defines the observed state of KogitoRuntime
@@ -55,6 +63,14 @@ type KogitoRuntime struct {
 
 	Spec   KogitoRuntimeSpec   `json:"spec,omitempty"`
 	Status KogitoRuntimeStatus `json:"status,omitempty"`
+}
+
+// GetRuntime ...
+func (k *KogitoRuntimeSpec) GetRuntime() RuntimeType {
+	if len(k.Runtime) == 0 {
+		k.Runtime = QuarkusRuntimeType
+	}
+	return k.Runtime
 }
 
 // GetSpec ...
