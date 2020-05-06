@@ -26,6 +26,7 @@ import (
 	operatormkt "github.com/operator-framework/operator-marketplace/pkg/apis/operators/v1"
 	coreappsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/api/extensions/v1beta1"
 	rbac "k8s.io/api/rbac/v1"
 	apiextensionsv1beta1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
 	apimeta "k8s.io/apimachinery/pkg/api/meta"
@@ -208,6 +209,7 @@ func newControllerCliOptions() controllercli.Options {
 	mapper.Add(v1alpha1.SchemeGroupVersion.WithKind(meta.KindKogitoJobsService.Name), &restScope{name: apimeta.RESTScopeNameNamespace})
 	mapper.Add(v1alpha1.SchemeGroupVersion.WithKind(meta.KindKogitoInfra.Name), &restScope{name: apimeta.RESTScopeNameNamespace})
 	mapper.Add(v1alpha1.SchemeGroupVersion.WithKind(meta.KindKogitoMgmtConsole.Name), &restScope{name: apimeta.RESTScopeNameNamespace})
+	mapper.Add(v1alpha1.SchemeGroupVersion.WithKind(meta.KindKogitoRuntime.Name), &restScope{name: apimeta.RESTScopeNameNamespace})
 	mapper.Add(coreappsv1.SchemeGroupVersion.WithKind(meta.KindDeployment.Name), &restScope{name: apimeta.RESTScopeNameNamespace})
 	mapper.Add(rbac.SchemeGroupVersion.WithKind(meta.KindRole.Name), &restScope{name: apimeta.RESTScopeNameNamespace})
 	mapper.Add(rbac.SchemeGroupVersion.WithKind(meta.KindRoleBinding.Name), &restScope{name: apimeta.RESTScopeNameNamespace})
@@ -222,6 +224,7 @@ func newControllerCliOptions() controllercli.Options {
 	mapper.Add(apibuildv1.SchemeGroupVersion.WithKind(meta.KindBuildConfig.Name), &restScope{name: apimeta.RESTScopeNameNamespace})
 	mapper.Add(infinispanv1.SchemeGroupVersion.WithKind(meta.KindInfinispan.Name), &restScope{name: apimeta.RESTScopeNameNamespace})
 	mapper.Add(corev1.SchemeGroupVersion.WithKind(meta.KindSecret.Name), &restScope{name: apimeta.RESTScopeNameNamespace})
+	mapper.Add(v1beta1.SchemeGroupVersion.WithKind(meta.KindIngress.Name), &restScope{name: apimeta.RESTScopeNameNamespace})
 
 	// the kube client is having problems with plural: kogitodataindexs :(
 	mapper.AddSpecific(v1alpha1.SchemeGroupVersion.WithKind(meta.KindKogitoDataIndex.Name),

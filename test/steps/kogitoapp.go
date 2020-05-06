@@ -77,7 +77,7 @@ func (data *Data) deployServiceFromExampleFile(runtimeType, exampleFile string) 
 
 // DeploymentConfig steps
 func (data *Data) kogitoApplicationHasPodsRunningWithinMinutes(dcName string, podNb, timeoutInMin int) error {
-	return framework.WaitForDeploymentConfigRunning(data.Namespace, dcName, podNb, timeoutInMin)
+	return framework.WaitForDeploymentRunning(data.Namespace, dcName, podNb, timeoutInMin)
 }
 
 func (data *Data) kogitoApplicationHaveResourcesWithinMinutes(dcName string, timeoutInMin int, dt *messages.PickleStepArgument_PickleTable) error {

@@ -31,6 +31,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	rbac "k8s.io/api/rbac/v1"
 
+	"k8s.io/api/extensions/v1beta1"
 	apiextensionsv1beta1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -115,6 +116,8 @@ var (
 	KindPod = DefinitionKind{"Pod", false, corev1.SchemeGroupVersion}
 	// KindSecret ...
 	KindSecret = DefinitionKind{"Secret", false, corev1.SchemeGroupVersion}
+	// KindIngress ...
+	KindIngress = DefinitionKind{"Ingress", false, v1beta1.SchemeGroupVersion}
 )
 
 // SetGroupVersionKind sets the group, version and kind for the resource

@@ -18,15 +18,19 @@ import (
 	"fmt"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/kiegroup/kogito-cloud-operator/pkg/client"
 	"github.com/kiegroup/kogito-cloud-operator/pkg/client/kubernetes"
 	"github.com/kiegroup/kogito-cloud-operator/pkg/client/meta"
+	"github.com/kiegroup/kogito-cloud-operator/test/config"
 	apps "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/api/extensions/v1beta1"
 	apiextensionsv1beta1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/apimachinery/pkg/util/intstr"
 )
 
 var (
@@ -139,6 +143,21 @@ func IsPodRunning(pod *corev1.Pod) bool {
 	return pod.Status.Phase == corev1.PodRunning
 }
 
+// WaitForDeploymentRunning waits for a deployment to be running, with a specific number of pod
+func WaitForDeploymentRunning(namespace, dName string, podNb int, timeoutInMin int) error {
+	return WaitForOnKubernetes(namespace, fmt.Sprintf("Deployment %s running", dName), timeoutInMin,
+		func() (bool, error) {
+			if dc, err := GetDeployment(namespace, dName); err != nil {
+				return false, err
+			} else if dc == nil {
+				return false, nil
+			} else {
+				GetLogger(namespace).Debugf("Deployment has %d available replicas\n", dc.Status.AvailableReplicas)
+				return dc.Status.AvailableReplicas == int32(podNb), nil
+			}
+		})
+}
+
 // GetDeployment retrieves deployment with specified name in namespace
 func GetDeployment(namespace, deploymentName string) (*apps.Deployment, error) {
 	deployment := &apps.Deployment{}
@@ -166,7 +185,7 @@ func loadResource(namespace, uri string, resourceRef meta.ResourceObject, before
 
 // WaitForAllPodsToContainTextInLog waits for pods of specified deployment config to contain specified text in log
 func WaitForAllPodsToContainTextInLog(namespace, dcName, logText string, timeoutInMin int) error {
-	return WaitForOnOpenshift(namespace, fmt.Sprintf("Pods for deployment config '%s' contain text '%s'", dcName, logText), timeoutInMin,
+	return WaitForOnKubernetes(namespace, fmt.Sprintf("Pods for deployment config '%s' contain text '%s'", dcName, logText), timeoutInMin,
 		func() (bool, error) {
 			pods, err := GetPodsByDeploymentConfig(namespace, dcName)
 			if err != nil {
@@ -217,4 +236,74 @@ func CreateSecret(namespace, name string, secretContent map[string]string) error
 	}
 
 	return kubernetes.ResourceC(kubeClient).Create(secret)
+}
+
+// GetIngressURI returns the ingress URI
+func GetIngressURI(namespace, serviceName string) (string, error) {
+	ingress, err := WaitForIngress(namespace, serviceName)
+	if err != nil || ingress == nil || len(ingress.Spec.Rules) == 0 {
+		return "", fmt.Errorf("Ingress %s does not exist in namespace %s: %v", serviceName, namespace, err)
+	}
+
+	return fmt.Sprintf("http://%s:80", ingress.Spec.Rules[0].Host), nil
+}
+
+// WaitForIngress waits for ingress by a service
+func WaitForIngress(namespace, serviceName string) (*v1beta1.Ingress, error) {
+	ingress := &v1beta1.Ingress{}
+	if exists, err :=
+		kubernetes.ResourceC(kubeClient).FetchWithKey(types.NamespacedName{Name: serviceName, Namespace: namespace}, ingress); err != nil {
+		return nil, err
+	} else if !exists {
+		return nil, nil
+	} else {
+		return ingress, nil
+	}
+}
+
+// ExposeServiceOnKubernetes adds ingress CR to expose a service
+func ExposeServiceOnKubernetes(namespace, serviceName string) error {
+	host := serviceName + namespace
+	if config.IsLocalTests() {
+		host = serviceName
+	}
+
+	ingress := v1beta1.Ingress{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:        serviceName,
+			Namespace:   namespace,
+			Annotations: map[string]string{"nginx.ingress.kubernetes.io/rewrite-target": "/"},
+		},
+		Spec: v1beta1.IngressSpec{
+			Rules: []v1beta1.IngressRule{
+				{
+					Host: host,
+					IngressRuleValue: v1beta1.IngressRuleValue{
+						HTTP: &v1beta1.HTTPIngressRuleValue{
+							Paths: []v1beta1.HTTPIngressPath{
+								{
+									Path: "/",
+									Backend: v1beta1.IngressBackend{
+										ServiceName: serviceName,
+										ServicePort: intstr.FromInt(8080),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	return kubernetes.ResourceC(kubeClient).Create(&ingress)
+}
+
+// WaitForOnKubernetes is a specific method
+func WaitForOnKubernetes(namespace, display string, timeoutInMin int, condition func() (bool, error)) error {
+	return WaitFor(namespace, display, GetKubernetesDurationFromTimeInMin(timeoutInMin), condition)
+}
+
+// GetKubernetesDurationFromTimeInMin will calculate the time depending on the configured cluster load factor
+func GetKubernetesDurationFromTimeInMin(timeoutInMin int) time.Duration {
+	return time.Duration(timeoutInMin*config.GetLoadFactor()) * time.Minute
 }

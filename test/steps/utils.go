@@ -60,7 +60,7 @@ func configureKogitoAppFromTable(table *messages.PickleStepArgument_PickleTable,
 		firstColumn := getFirstColumn(row)
 		switch firstColumn {
 		case configKey:
-			parseConfigRow(row, kogitoApp, &profiles)
+			parseConfigRowForKogitoApp(row, kogitoApp, &profiles)
 
 		case buildEnvKey:
 			kogitoApp.Spec.Build.AddEnvironmentVariable(getSecondColumn(row), getThirdColumn(row))
@@ -92,12 +92,49 @@ func configureKogitoAppFromTable(table *messages.PickleStepArgument_PickleTable,
 		kogitoApp.Spec.Build.AddEnvironmentVariable(mavenArgsAppendEnvVar, "-P"+strings.Join(profiles, ","))
 	}
 
-	addDefaultJavaOptionsIfNotProvided(kogitoApp)
+	addDefaultJavaOptionsIfNotProvided(kogitoApp.Spec.KogitoServiceSpec)
 
 	return nil
 }
 
-func parseConfigRow(row *messages.PickleStepArgument_PickleTable_PickleTableRow, kogitoApp *v1alpha1.KogitoApp, profilesPtr *[]string) {
+func configureKogitoRuntimeFromTable(table *messages.PickleStepArgument_PickleTable, kogitoRuntime *v1alpha1.KogitoRuntime) error {
+	if len(table.Rows) == 0 { // Using default configuration
+		return nil
+	}
+
+	if len(table.Rows[0].Cells) != 3 {
+		return fmt.Errorf("expected table to have exactly three columns")
+	}
+
+	for _, row := range table.Rows {
+		firstColumn := getFirstColumn(row)
+		switch firstColumn {
+		case configKey:
+			parseConfigRowForKogitoRuntime(row, kogitoRuntime)
+
+		case labelKey:
+			kogitoRuntime.Spec.ServiceLabels[getSecondColumn(row)] = getThirdColumn(row)
+
+		case runtimeEnvKey:
+			kogitoRuntime.Spec.AddEnvironmentVariable(getSecondColumn(row), getThirdColumn(row))
+
+		case runtimeRequestKey:
+			kogitoRuntime.Spec.AddResourceRequest(getSecondColumn(row), getThirdColumn(row))
+
+		case runtimeLimitKey:
+			kogitoRuntime.Spec.AddResourceLimit(getSecondColumn(row), getThirdColumn(row))
+
+		default:
+			return fmt.Errorf("Unrecognized configuration option: %s", firstColumn)
+		}
+	}
+
+	addDefaultJavaOptionsIfNotProvided(kogitoRuntime.Spec.KogitoServiceSpec)
+
+	return nil
+}
+
+func parseConfigRowForKogitoApp(row *messages.PickleStepArgument_PickleTable_PickleTableRow, kogitoApp *v1alpha1.KogitoApp, profilesPtr *[]string) {
 	secondColumn := getSecondColumn(row)
 
 	switch secondColumn {
@@ -127,16 +164,35 @@ func parseConfigRow(row *messages.PickleStepArgument_PickleTable_PickleTableRow,
 	}
 }
 
-func addDefaultJavaOptionsIfNotProvided(kogitoApp *v1alpha1.KogitoApp) {
+func parseConfigRowForKogitoRuntime(row *messages.PickleStepArgument_PickleTable_PickleTableRow, kogitoRuntime *v1alpha1.KogitoRuntime) {
+	secondColumn := getSecondColumn(row)
+
+	switch secondColumn {
+
+	case persistenceKey:
+		persistence := framework.MustParseEnabledDisabled(getThirdColumn(row))
+		if persistence {
+			kogitoRuntime.Spec.InfinispanMeta.InfinispanProperties.UseKogitoInfra = true
+		}
+
+	case eventsKey:
+		events := framework.MustParseEnabledDisabled(getThirdColumn(row))
+		if events {
+			kogitoRuntime.Spec.KafkaMeta.KafkaProperties.UseKogitoInfra = true
+		}
+	}
+}
+
+func addDefaultJavaOptionsIfNotProvided(spec v1alpha1.KogitoServiceSpec) {
 	javaOptionsProvided := false
-	for _, env := range kogitoApp.Spec.Envs {
+	for _, env := range spec.Envs {
 		if env.Name == javaOptionsEnvVar {
 			javaOptionsProvided = true
 		}
 	}
 
 	if !javaOptionsProvided {
-		kogitoApp.Spec.AddEnvironmentVariable(javaOptionsEnvVar, "-Xmx2G")
+		spec.AddEnvironmentVariable(javaOptionsEnvVar, "-Xmx2G")
 	}
 }
 

@@ -24,6 +24,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/kiegroup/kogito-cloud-operator/test/config"
 )
 
 // HTTPRequestResult represents the success or error of an HTTP request
@@ -35,6 +37,25 @@ const (
 	// HTTPRequestResultError in case of error
 	HTTPRequestResultError HTTPRequestResult = "error"
 )
+
+// WaitAndRetrieveRouteURI waits for a route and returns its URI
+func WaitAndRetrieveRouteURI(namespace, serviceName string) (string, error) {
+	var uri string
+	var err error
+	if config.IsOpenshiftCluster() {
+		uri, err = GetRouteURI(namespace, serviceName)
+	} else {
+		uri, err = GetIngressURI(namespace, serviceName)
+	}
+
+	if err != nil {
+		return "", fmt.Errorf("Error retrieving URI for route %s in namespace %s: %v", serviceName, namespace, err)
+	} else if len(uri) <= 0 {
+		return "", fmt.Errorf("No URI found for route name %s in namespace %s: %v", serviceName, namespace, err)
+	}
+	GetLogger(namespace).Debugf("Got route %s\n", uri)
+	return uri, nil
+}
 
 // WaitForSuccessfulHTTPRequest waits for an HTTP request to be successful
 func WaitForSuccessfulHTTPRequest(namespace, httpMethod, uri, path, bodyFormat, bodyContent string, timeoutInMin int) error {

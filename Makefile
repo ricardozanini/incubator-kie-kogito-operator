@@ -87,6 +87,7 @@ load_factor=1
 local=false
 ci=
 cr_deployment_only=false
+cluster=openshift
 load_default_config=false
 # operator information
 operator_image=
@@ -158,6 +159,7 @@ run-tests:
 		--examples_ref ${examples_ref} \
 		--namespace_name ${namespace_name} \
 		--load_factor ${load_factor} \
+		--cluster ${cluster} \
 		$${opts_str}
 
 .PHONY: run-smoke-tests

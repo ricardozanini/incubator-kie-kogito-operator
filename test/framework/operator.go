@@ -16,7 +16,6 @@ package framework
 
 import (
 	"fmt"
-	"strings"
 
 	coreapps "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -89,7 +88,7 @@ func DeployKogitoOperatorFromYaml(namespace string) error {
 			return false, err
 		}
 		GetLogger(namespace).Info(output)
-		return strings.Contains(output, "secret/kogito-operator-dockercfg"), nil
+		return true, nil
 	})
 	if err != nil {
 		return err

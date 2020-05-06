@@ -1095,6 +1095,7 @@ You can set those optional keys:
   *Default is false.*
 - `ci` to be set if running tests with CI. Give CI name. 
 - `cr_deployment_only` to be set if you don't have a CLI built. Default will deploy applications via the CLI.
+- `cluster` to set the cluster where tests will run.
 - `load_default_config` sets to true if you want to directly use the default test config (from test/.default_config)
 <!--- operator information -->
 - `operator_image` is the Operator image full name.  

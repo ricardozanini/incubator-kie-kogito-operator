@@ -30,6 +30,7 @@ type TestConfig struct {
 	localTests       bool
 	ciName           string
 	crDeploymentOnly bool
+	cluster          string
 
 	// operator information
 	operatorImageName string
@@ -76,6 +77,8 @@ const (
 	defaultKogitoExamplesURI = "https://github.com/kiegroup/kogito-examples"
 
 	defaultLoadFactor = 1
+
+	openshiftClusterName = "openshift"
 )
 
 var (
@@ -96,6 +99,7 @@ func BindFlags(set *flag.FlagSet) {
 	set.BoolVar(&env.localTests, prefix+"local", false, "If tests are launch on local machine")
 	set.StringVar(&env.ciName, prefix+"ci", "", "If tests are launch on ci machine, give the CI name")
 	set.BoolVar(&env.crDeploymentOnly, prefix+"cr-deployment-only", false, "Use this option if you have no CLI to test against. It will use only direct CR deployments.")
+	set.StringVar(&env.cluster, prefix+"cluster", openshiftClusterName, "Set this option if you are running the test suite on a different cluster.")
 
 	// operator information
 	set.StringVar(&env.operatorImageName, prefix+"operator-image-name", defaultOperatorImageName, "Operator image name")
@@ -163,6 +167,11 @@ func GetCiName() string {
 // IsCrDeploymentOnly returns whether the deployment should be done only with CR
 func IsCrDeploymentOnly() bool {
 	return env.crDeploymentOnly
+}
+
+// IsOpenshiftCluster returns whether the cluster is running on Openshift
+func IsOpenshiftCluster() bool {
+	return env.cluster == openshiftClusterName
 }
 
 // operator information

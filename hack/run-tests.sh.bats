@@ -188,6 +188,18 @@
     [[ "${output}" != *"--tests.cr-deployment-only"* ]]
 }
 
+@test "invoke run-tests with cluster" {
+    run ${BATS_TEST_DIRNAME}/run-tests.sh --cluster openshift --dry_run
+    [ "$status" -eq 0 ]
+    [[ "${output}" =~ "--tests.cluster" ]]
+}
+
+@test "invoke run-tests without cluster" {
+    run ${BATS_TEST_DIRNAME}/run-tests.sh --dry_run
+    [ "$status" -eq 0 ]
+    [[ "${output}" != *"--tests.cluster"* ]]
+}
+
 @test "invoke run-tests with load_default_config" {
     run ${BATS_TEST_DIRNAME}/run-tests.sh --load_default_config --dry_run
     [ "$status" -eq 0 ]
