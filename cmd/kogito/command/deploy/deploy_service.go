@@ -114,9 +114,6 @@ func (i *deployCommand) RegisterHook() {
 			if len(args) == 0 {
 				return fmt.Errorf("the service requires a name ")
 			}
-			if len(args) == 0 {
-				return fmt.Errorf("the service requires a name ")
-			}
 			if err := util.ParseStringsForKeyPair(i.flags.buildEnv); err != nil {
 				return fmt.Errorf("build environment variables are in the wrong format. Valid are key pairs like 'env=value', received %s", i.flags.buildEnv)
 			}

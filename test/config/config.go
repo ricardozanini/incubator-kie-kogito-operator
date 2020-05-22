@@ -40,12 +40,14 @@ type TestConfig struct {
 	cliPath           string
 
 	// runtime
-	servicesImageVersion   string
-	servicesImageNamespace string
-	servicesImageRegistry  string
-	dataIndexImageTag      string
-	jobsServiceImageTag    string
-	mgmtConsoleImageTag    string
+	servicesImageVersion             string
+	servicesImageNamespace           string
+	servicesImageRegistry            string
+	dataIndexImageTag                string
+	jobsServiceImageTag              string
+	mgmtConsoleImageTag              string
+	runtimeApplicationImageNamespace string
+	runtimeApplicationImageRegistry  string
 
 	// build
 	mavenMirrorURL       string
@@ -112,6 +114,8 @@ func BindFlags(set *flag.FlagSet) {
 	set.StringVar(&env.dataIndexImageTag, prefix+"data-index-image-tag", "", "Set the Kogito Data Index image tag ('services-image-version' is ignored)")
 	set.StringVar(&env.jobsServiceImageTag, prefix+"jobs-service-image-tag", "", "Set the Kogito Jobs Service image tag ('services-image-version' is ignored)")
 	set.StringVar(&env.mgmtConsoleImageTag, prefix+"management-console-image-tag", "", "Set the Kogito Management Console image tag ('services-image-version' is ignored)")
+	set.StringVar(&env.runtimeApplicationImageNamespace, prefix+"runtime-application-image-namespace", "", "Set the runtime application (built Kogito application image) image namespace")
+	set.StringVar(&env.runtimeApplicationImageRegistry, prefix+"runtime-application-image-registry", "", "Set the runtime application (built Kogito application image) image registry")
 
 	// build
 	set.StringVar(&env.mavenMirrorURL, prefix+"maven-mirror-url", "", "Maven mirror url to be used when building app in the tests")
@@ -219,6 +223,16 @@ func GetJobsServiceImageTag() string {
 // GetManagementConsoleImageTag return the Kogito Management Console image tag
 func GetManagementConsoleImageTag() string {
 	return env.mgmtConsoleImageTag
+}
+
+// GetRuntimeApplicationImageRegistry return the registry for the runtime application images
+func GetRuntimeApplicationImageRegistry() string {
+	return env.runtimeApplicationImageRegistry
+}
+
+// GetRuntimeApplicationImageNamespace return the namespace for runtime application images
+func GetRuntimeApplicationImageNamespace() string {
+	return env.runtimeApplicationImageNamespace
 }
 
 // build
